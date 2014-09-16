@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>多人画板</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <script src="/js/socket.io.js"></script>
+    <script src="/js/jquery.qrcode.min.js"></script>
+
+    <link rel="stylesheet" href="/css/farbtastic.css">
+    <script src="/js/farbtastic_fk.js"></script>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/allfun.js"></script>
+
+
+</head>
+<body style="background: #f1f1f1;">
+<div id='actbox' style="margin-top: 15px;">
+    <p id="actionfk1" class="text-center">
+        <button type="button" class="btn btn-primary btn-lg" onclick="creatroom()">创建画板</button>
+        <button type="button" class="btn btn-success btn-lg" onclick="creatroom(1)">打开画板</button>
+    </p>
+
+    <div id='actionfk2' class="input-group input-group-lg" style="display: none;">
+        <span class="input-group-addon">画板ID</span>
+        <input id='number' type="text" class="form-control" placeholder="请输入画板号码">
+	   <span class="input-group-btn">
+        <button class="btn btn-default" type="button" onclick="joinroom()">打开</button>
+      </span>
+    </div>
+
+
+</div>
+
+
+
+<canvas id="myCanvas" style=' margin: 0; padding: 0; display: block;background: #fff;'>你的浏览器要升级了！</canvas>
+
+<div class="tools" style="left:0; ">
+
+    <div class="btn-group dropup">
+        <button id='nowinline' type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+            在线1人 <span class="caret"></span>
+        </button>
+        <ul id='userlist' class="dropdown-menu" role="menu">
+            <li><a href="javascript:;" onclick="setname();"><span class="glyphicon glyphicon-user"></span>设置你的名字</a></li>
+            <li><a href="javascript:;" onclick="setname();">给大家发消息<span class="glyphicon glyphicon-send"></span></a></li>
+            <li class="divider"></li>
+            <li><a href="javascript:;" onclick="sharego();"><span class="glyphicon glyphicon-share"></span>分享给朋友</a></li>
+        </ul>
+    </div>
+
+
+</div>
+<div id="sharefq" onClick="this.style.display = 'none';" style="top:0px;left:0px;width:100%;height:100%;position:fixed;z-index: 2147483647;display:none;text-align:right;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAANSURBVBhXY2BgYGgAAACFAIG1UTXHAAAAAElFTkSuQmCC);">
+    <img width="80%" src="images/guide_fk.png" />
+    <div id="qrcode" style="text-align: center;"></div>
+</div>
+
+
+
+<div class="tools" style="right:0; ">
+    <div class="btn-group dropup">
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+            <span id="bitou" style="background: #f0f; border-radius: 50%; width: 10px; height: 10px; display: inline-block;"></span> <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <li class="t_bitou"> &nbsp;<bottom onclick="set_bitou(1,this)" title="画笔" class="active"><span class="glyphicon glyphicon-pencil"></span></bottom> <bottom onclick="set_bitou(2,this)" title="橡皮擦"><span class="glyphicon glyphicon-unchecked"></span></bottom> <bottom onclick="set_bitou(3,this)" title="清空画板"><span class="glyphicon glyphicon-trash"></span></bottom> <bottom onclick="set_bitou(4,this)" title="保存"><span class="glyphicon glyphicon-floppy-disk"></span></bottom></li>
+            <li class="divider"></li>
+            <li class="t_yanse"> &nbsp;<bottom style="background: #000;" onclick="set_yscx('#000');"></bottom> <bottom style="background: #7f7f7f;" onclick="set_yscx('#7f7f7f');"></bottom> <bottom style="background: #880015;" onclick="set_yscx('#880015');"></bottom> <bottom style="background: #ed1c24;" onclick="set_yscx('#ed1c24');"></bottom></li>
+            <li class="t_yanse"> &nbsp;<bottom style="background: #ff7f27;" onclick="set_yscx('#ff7f27');"></bottom> <bottom style="background: #fff200;" onclick="set_yscx('#fff200');"></bottom> <bottom style="background: #22b14c;" onclick="set_yscx('#22b14c');"></bottom> <bottom style="background: #00a2e8;" onclick="set_yscx('#00a2e8');"></bottom></li>
+            <li class="t_yanse"> &nbsp;<bottom style="background: #3f48cc;" onclick="set_yscx('#3f48cc');"></bottom> <bottom style="background: #a349a4;" onclick="set_yscx('#a349a4');"></bottom> <bottom style="background: #b97a57;" onclick="set_yscx('#b97a57');"></bottom> <bottom style="background: #b5e61d;" onclick="set_yscx('#b5e61d');"></bottom></li>
+            <li class="t_yanse">
+                &nbsp;<bottom id="colorpickerbnt" style="width: 148px; font-size: 20px;color: #fff;" onclick="ste_colorpicker(yanse);">
+                    <span class="glyphicon glyphicon-screenshot"></span></bottom>
+            </li>
+            <li class="divider"></li>
+            <li class="t_bihua"> &nbsp;<bottom onclick="set_yscx('',4,this);">特细</bottom> <bottom onclick="set_yscx('',6,this);">细</bottom>
+                <bottom onclick="set_yscx('',10,this);">粗</bottom>
+                <bottom onclick="set_yscx('',20,this);">特粗</bottom> </li>
+        </ul>
+    </div>
+
+
+</div>
+
+
+<div id="msgbox" class="tools" style="height: 30px;  width: 100%; overflow: hidden; line-height: 15px; padding: 0 25%; font-size: 12px;text-shadow:1px 1px 0px rgba(255,255,128,0.8);pointer-events:none;">
+    <p></p>
+</div>
+
+<div id="fk_container">
+    <div id='colorpicker' style="background: #ededed; width: 195px; height: 195px; display: inline-block;"></div>
+    <button id='colorbutton' type="button" class="btn btn-primary">确定</button>
+</div>
+
+</body>
+</html>
